@@ -4,9 +4,10 @@ include_once dirname(__FILE__) . '/../interfaces/iindex.php';
 define('SINGLEINDEX_DOCUMENTCOUNT', 3);
 define('SINGLEINDEX_DOCUMENTBYTESIZE', 12);
 define('SINGLEINDEX_DOCUMENTINTEGERBYTESIZE', 4);
+define('SINGLEINDEX_DOCUMENTFILEEXTENTION', '.bin');
 
 class singlefolderindex implements iindex {
-	function construct() {
+	function __construct() {
 		$this->_checkDefinitions();
 	}
 
@@ -46,14 +47,15 @@ class singlefolderindex implements iindex {
 		}
 		$ret = array();
 		for ($i = 0; $i < $filesize / SINGLEINDEX_DOCUMENTBYTESIZE; $i++) {
-			$bindata1 = fread($fp, SINGLEINDEX_DOCUMENTBYTESIZE);
-			$bindata2 = fread($fp, SINGLEINDEX_DOCUMENTBYTESIZE);
-			$bindata3 = fread($fp, SINGLEINDEX_DOCUMENTBYTESIZE);
+			$bindata1 = fread($fp, SINGLEINDEX_DOCUMENTINTEGERBYTESIZE);
+			$bindata2 = fread($fp, SINGLEINDEX_DOCUMENTINTEGERBYTESIZE);
+			$bindata3 = fread($fp, SINGLEINDEX_DOCUMENTINTEGERBYTESIZE);
 			$data1 = unpack('i', $bindata1);
 			$data2 = unpack('i', $bindata2);
 			$data3 = unpack('i', $bindata3);
-
-			$ret[] = array($data1[1], $data2[1], $data3[1]);
+			$ret[] = array($data1[1],
+				$data2[1],
+				$data3[1]);
 		}
 		fclose($fp);
 		return $ret;
