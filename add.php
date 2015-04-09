@@ -1,17 +1,27 @@
 <?php
 set_time_limit(0);
-define('INDEXLOCATION', dirname(__FILE__) . '/index/');
-define('DOCUMENTLOCATION', dirname(__FILE__) . '/documents/');
 
 include_once './classes/indexer.class.php';
 include_once './classes/searcher.class.php';
 include_once './classes/index.class.php';
+include_once './classes/ranker.class.php';
 include_once './classes/documentstore.class.php';
 
+define('INDEXLOCATION', dirname(__FILE__) . '/index/');
+define('DOCUMENTLOCATION', dirname(__FILE__) . '/documents/');
+
+if(!file_exists('./documents/')){
+    mkdir('./documents/');
+}
+
+if(!file_exists('./index/')){
+    mkdir('./index/');
+}
 $index = new index();
 $docstore = new documentstore();
+$ranker = new ranker();
 $indexer = new indexer($index, $docstore);
-$search = new searcher($index, $docstore);
+$search = new searcher($index, $docstore, $ranker);
 
 $indexer->index(array('Setting the AuthzUserAuthoritative directive explicitly to Off allows for user authorization to be passed on to lower level modules (as defined in the modules.c files) if there is no user matching the supplied userID.'));
 $indexer->index(array('The Allow directive affects which hosts can access an area of the server. Access can be controlled by hostname, IP address, IP address range, or by other characteristics of the client request captured in environment variables.'));
