@@ -10,13 +10,13 @@ include_once './classes/naieveindexer.class.php';
 include_once './classes/naievesearch.class.php';
 include_once './classes/singlefolderindex.class.php';
 include_once './classes/singlefolderdocumentstore.class.php';
-include_once './classes/naieveranker.class.php';
+//include_once './classes/naieveranker.class.php';
 
 $index = new singlefolderindex();
 $docstore = new singlefolderdocumentstore();
 $indexer = new naieveindexer($index, $docstore);
-$ranker = new naieveranker();
-$search = new naievesearch($index, $docstore, $ranker);
+//$ranker = new naieveranker();
+$search = new naievesearch($index, $docstore);
 
 echo '<ul>';
 foreach ($search->dosearch($_GET['q']) as $result) {
