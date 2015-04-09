@@ -1,17 +1,17 @@
 <?php
 include_once(dirname(__FILE__).'/../interfaces/isearch.php');
-//include_once(dirname(__FILE__).'/../interfaces/iranker.php');
+include_once(dirname(__FILE__).'/../interfaces/iranker.php');
 include_once(dirname(__FILE__).'/../classes/index.class.php');
 
 class searcher implements isearch {
 	public $index = null;
 	public $documentstore = null;
-//	public $ranker = null;
+	public $ranker = null;
 
-	function __construct(iindex $index, idocumentstore $documentstore) {
+	function __construct(iindex $index, idocumentstore $documentstore, iranker $ranker) {
 		$this->index = $index;
 		$this->documentstore = $documentstore;
-//		$this->ranker = $ranker;
+		$this->ranker = $ranker;
 	}
   
 	public function dosearch($searchterms) {
@@ -21,7 +21,7 @@ class searcher implements isearch {
 			if($ind != null) {
 				foreach($ind as $i) {
 					$doc[] = $this->documentstore->getDocument($i[0]);
-//					usort($ind, array($this->ranker, 'rankDocuments'));
+					usort($ind, array($this->ranker, 'rankDocuments'));
 				}
 			}
 		}

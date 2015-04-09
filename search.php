@@ -10,13 +10,13 @@ include_once './classes/indexer.class.php';
 include_once './classes/searcher.class.php';
 include_once './classes/index.class.php';
 include_once './classes/documentstore.class.php';
-//include_once './classes/naieveranker.class.php';
+include_once './classes/ranker.class.php';
 
 $index = new index();
 $docstore = new documentstore();
 $indexer = new indexer($index, $docstore);
-//$ranker = new naieveranker();
-$search = new searcher($index, $docstore);
+$ranker = new ranker();
+$search = new searcher($index, $docstore,$ranker);
 
 echo '<ul>';
 foreach ($search->dosearch($_GET['q']) as $result) {

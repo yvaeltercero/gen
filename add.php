@@ -4,14 +4,12 @@ define('INDEXLOCATION', dirname(__FILE__) . '/index/');
 define('DOCUMENTLOCATION', dirname(__FILE__) . '/documents/');
 
 include_once './classes/indexer.class.php';
-//include_once './classes/naieveranker.class.php';
 include_once './classes/searcher.class.php';
 include_once './classes/index.class.php';
 include_once './classes/documentstore.class.php';
 
 $index = new index();
 $docstore = new documentstore();
-//$ranker = new naieveranker();
 $indexer = new indexer($index, $docstore);
 $search = new searcher($index, $docstore);
 
