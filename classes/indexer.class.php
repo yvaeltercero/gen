@@ -1,8 +1,8 @@
 <?php
 include_once(dirname(__FILE__).'/../interfaces/iindexer.php');
-include_once(dirname(__FILE__).'/../classes/singlefolderindex.class.php');
+include_once(dirname(__FILE__).'/../classes/index.class.php');
 
-class naieveindexer implements iindexer {
+class indexer implements iindexer {
 	public $index = null;
 	public $documentstore = null;
 

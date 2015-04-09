@@ -6,7 +6,7 @@ define('SINGLEINDEX_DOCUMENTBYTESIZE', 12);
 define('SINGLEINDEX_DOCUMENTINTEGERBYTESIZE', 4);
 define('SINGLEINDEX_DOCUMENTFILEEXTENTION', '.bin');
 
-class singlefolderindex implements iindex {
+class index implements iindex {
 	function __construct() {
 		$this->_checkDefinitions();
 	}

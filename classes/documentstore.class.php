@@ -3,7 +3,7 @@ include_once(dirname(__FILE__).'/../interfaces/idocumentstore.php');
 
 define('DOCUMENTSTORE_DOCUMENTFILEEXTENTION', '.txt');
 
-class singlefolderdocumentstore implements idocumentstore {
+class documentstore implements idocumentstore {
 	function __construct() {
 		$this->_checkDefinitions();
 	}
