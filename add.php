@@ -29,4 +29,11 @@ $indexer->index(array('This directive allows access to the server to be restrict
 $indexer->index(array('The Order directive, along with the Allow and Deny directives, controls a three-pass access control system. The first pass processes either all Allow or all Deny directives, as specified by the Order directive. The second pass parses the rest of the directives (Deny or Allow). The third pass applies to all requests which do not match either of the first two.'));
 $indexer->index(array('The AuthDBDUserPWQuery specifies an SQL query to look up a password for a specified user.  The users ID will be passed as a single string parameter when the SQL query is executed.  It may be referenced within the query statement using a %s format specifier.'));
 $indexer->index(array('The AuthDBDUserRealmQuery specifies an SQL query to look up a password for a specified user and realm. The users ID and the realm, in that order, will be passed as string parameters when the SQL query is executed.  They may be referenced within the query statement using %s format specifiers.'));
+
+$toindex = array();
+for($j=0;$j<1000; $j++) {
+	$toindex[] = 'If you can watch much television, then being dead will be a cinch. Actually, watching television and surfing the Internet are really excellent practice for being dead.';
+}
+$indexer->index($toindex);
+
 ?>
