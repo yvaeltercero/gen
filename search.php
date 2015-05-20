@@ -8,6 +8,7 @@ define('DOCUMENTLOCATION', dirname(__FILE__) . '/documents/');
 
 include_once './classes/indexer.class.php';
 include_once './classes/searcher.class.php';
+// Change with coolindex and cooldocumentstore
 include_once './classes/index.class.php';
 include_once './classes/documentstore.class.php';
 include_once './classes/ranker.class.php';

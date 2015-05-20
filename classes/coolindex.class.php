@@ -45,9 +45,8 @@ class coolindex implements iindex{
 			return array();
 		}
 		$fp = fopen($this->_getFilePathName($name), 'r');
-		$filesize = filesize($this->_getFilePathName($name));
-
-		if($filesize % MULTIINDEX_DOCUMENTBYSIZE != 0){
+		$filesize = filesize($this->_getFilePathName($name));	
+		if($filesize % MULTIINDEX_DOCUMENTBYTESIZE != 0){
 			throw new Exception('Filesize incorrect, index is corrupt!');
 		}
 		$ret = array();
@@ -96,7 +95,9 @@ class coolindex implements iindex{
 	public function _getFilePathName($name){
 		$md5 = md5($name);
 		$one = substr($md5, 0, 2);
-		mkdir(INDEXLOCATION.$one.'/');
+		if(!file_exists(INDEXLOCATION.$one.'/')){
+			mkdir(INDEXLOCATION.$one.'/');
+		}
 		return INDEXLOCATION.$one.'/'.$name.MULTIINDEX_DOCUMENTFILEEXTENTION;
 	}
 

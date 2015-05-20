@@ -1,14 +1,17 @@
 <?php
 include_once(dirname(__FILE__).'/../interfaces/iindexer.php');
 include_once(dirname(__FILE__).'/../classes/index.class.php');
+include_once(dirname(__FILE__).'/../interfaces/iranker.php');
 
 class indexer implements iindexer {
 	public $index = null;
 	public $documentstore = null;
+	public $ranker = null;
 
-	function __construct(iindex $index,idocumentstore $documentstore) {
+	function __construct(iindex $index,idocumentstore $documentstore, iranker $ranker) {
 		$this->index = $index;
 		$this->documentstore = $documentstore;
+		$this->ranker = $ranker;
 	}
   
 	public function index(array $documents) {
