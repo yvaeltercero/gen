@@ -1,9 +1,9 @@
 <?php
 include_once(dirname(__FILE__).'/../interfaces/isearch.php');
 include_once(dirname(__FILE__).'/../interfaces/iranker.php');
-include_once(dirname(__FILE__).'/../classes/index.class.php');
+include_once(dirname(__FILE__).'/../classes/dummyindex.class.php');
 
-class searcher implements isearch {
+class nicesearch implements isearch {
 	public $index = null;
 	public $documentstore = null;
 	public $ranker = null;
@@ -13,22 +13,32 @@ class searcher implements isearch {
 		$this->documentstore = $documentstore;
 		$this->ranker = $ranker;
 	}
-  
-	public function dosearch($searchterms) {
-		$doc = array();
+
+
+	function dosearch($searchterms) {
+		$indresult = array();
 		foreach($this->_cleanSearchTerms($searchterms) as $term) {
+			
 			$ind = $this->index->getDocuments($term);
+			
 			if($ind != null) {
+				usort($ind, array($this->ranker, 'rankDocuments'));
 				foreach($ind as $i) {
-					$doc[] = $this->documentstore->getDocument($i[0]);
-					usort($ind, array($this->ranker, 'rankDocuments'));
+					$indresult[$i[0]] = $i[0];
 				}
 			}
 		}
+
+		$doc = array();
+		foreach($indresult as $i) {
+			$doc[] = $this->documentstore->getDocument($i);
+		}
+
 		return $doc;
 	}
+	
   
-	public function _cleanSearchTerms($searchterms) {
+	function _cleanSearchTerms($searchterms) {
 		$cleansearchterms = strtolower($searchterms);
 		$cleansearchterms = preg_replace('/\W/i',' ',$cleansearchterms);
 		$cleansearchterms = preg_replace('/\s\s+/', ' ', $cleansearchterms);

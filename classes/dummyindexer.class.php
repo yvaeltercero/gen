@@ -1,53 +1,34 @@
 <?php
 include_once(dirname(__FILE__).'/../interfaces/iindexer.php');
-include_once(dirname(__FILE__).'/../interfaces/iranker.php');
 include_once(dirname(__FILE__).'/../classes/dummyindex.class.php');
 
-class coolindexer implements iindexer {
+class dummyindexer implements iindexer {
 	public $index = null;
 	public $documentstore = null;
-	public $ranker = null;
 
-	function __construct(iindex $index,idocumentstore $documentstore, iranker $ranker) {
+	function __construct(iindex $index,idocumentstore $documentstore) {
 		$this->index = $index;
 		$this->documentstore = $documentstore;
-		$this->ranker = $ranker;
 	}
   
 	public function index(array $documents) {
 		if(!is_array($documents)) {
 			return false;
 		}
-		
-		$documenthash = array(); // so we can process multiple documents faster
-		
 		foreach($documents as $document) {
-			
-			// Save the document and get its ID then clean it up for processing
 			$id = $this->documentstore->storeDocument(array($document));
 			$con = $this->_concordance($this->_cleanDocument($document));
-			
 			foreach($con as $word => $count) {
-				// Get and cache the word if we dont have it
-				if(!array_key_exists($word,$documenthash)) {
-					$ind = $this->index->getDocuments($word);
-					$documenthash[$word] = $ind;
-				}
-				
-				if(count($documenthash[$word]) == 0) {
-					$documenthash[$word] = array(array($id,$count,0));
+				$ind = $this->index->getDocuments($word);
+				if(count($ind) == 0) {
+					$this->index->storeDocuments($word,array(array($id,$count,0)));
 				}
 				else {
-					$documenthash[$word][] = array($id,$count,0);
+					$ind[] = array($id,0,0);
+					$this->index->storeDocuments($word,$ind);
 				}
 			}
 		}
-		
-		foreach($documenthash as $key => $value) {
-			usort($value, array($this->ranker, 'rankDocuments'));
-			$this->index->storeDocuments($key,$value);
-		}
-		
 		return true;
 	}
 
@@ -68,10 +49,10 @@ class coolindexer implements iindexer {
 	}
   
 	public function _cleanDocument($document) {
-		
-		$contents = $document[0].' '.$document[1].' '.$document[2];
-		
-		$cleandocument = strip_tags(strtolower($contents));
+		if(!is_string($document)) {
+			return array();
+		}
+		$cleandocument = strip_tags(strtolower($document));
 		$cleandocument = preg_replace('/\W/i',' ',$cleandocument);
 		$cleandocument = preg_replace('/\s\s+/', ' ', $cleandocument);
 		if($cleandocument != ''){

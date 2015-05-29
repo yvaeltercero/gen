@@ -1,37 +1,49 @@
 <?php
 include_once(dirname(__FILE__).'/../interfaces/iindexer.php');
-include_once(dirname(__FILE__).'/../classes/index.class.php');
-include_once(dirname(__FILE__).'/../interfaces/iranker.php');
+include_once(dirname(__FILE__).'/../classes/dummyindex.class.php');
 
-class indexer implements iindexer {
+class niceindexer implements iindexer {
 	public $index = null;
 	public $documentstore = null;
-	public $ranker = null;
 
-	function __construct(iindex $index,idocumentstore $documentstore, iranker $ranker) {
+	function __construct(iindex $index,idocumentstore $documentstore) {
 		$this->index = $index;
 		$this->documentstore = $documentstore;
-		$this->ranker = $ranker;
 	}
   
 	public function index(array $documents) {
 		if(!is_array($documents)) {
 			return false;
 		}
+		
+		$documenthash = array(); // so we can process multiple documents faster
+		
 		foreach($documents as $document) {
+			
+			// Save the document and get its ID then clean it up for processing
 			$id = $this->documentstore->storeDocument(array($document));
 			$con = $this->_concordance($this->_cleanDocument($document));
+			
 			foreach($con as $word => $count) {
-				$ind = $this->index->getDocuments($word);
-				if(count($ind) == 0) {
-					$this->index->storeDocuments($word,array(array($id,$count,0)));
+				// Get and cache the word if we dont have it
+				if(!array_key_exists($word,$documenthash)) {
+					$ind = $this->index->getDocuments($word);
+					$documenthash[$word] = $ind;
+				}
+				
+				if(count($documenthash[$word]) == 0) {
+					$documenthash[$word] = array(array($id,$count,0));
 				}
 				else {
-					$ind[] = array($id,0,0);
-					$this->index->storeDocuments($word,$ind);
+					$documenthash[$word][] = array($id,$count,0);
 				}
 			}
 		}
+		
+		foreach($documenthash as $key => $value) {
+			$this->index->storeDocuments($key,$value);
+		}
+		
 		return true;
 	}
 

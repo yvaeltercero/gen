@@ -1,17 +1,15 @@
 <?php
-
-include_once dirname(__FILE__).'/../interfaces/idocumentstore.php';
+include_once(dirname(__FILE__).'/../interfaces/idocumentstore.php');
 
 define('DOCUMENTSTORE_DOCUMENTFILEEXTENTION', '.txt');
 
-class cooldocumentstore implements idocumentstore{
-
-	function __construct(){
+class cooldocumentstore implements idocumentstore {
+	function __construct() {
 		$this->_checkDefinitions();
 	}
 
-	public function storeDocument(array $document = null){
-		if(!is_array($document) || count($document) == 0){
+	public function storeDocument(array $document=null) {
+		if(!is_array($document) || count($document) == 0) {
 			return false;
 		}
 		$docid = $this->_getNextDocumentId();
@@ -21,51 +19,48 @@ class cooldocumentstore implements idocumentstore{
 		fclose($fp);
 		return $docid;
 	}
-
-	public function getDocument($documentid){
-		if(!is_integer($documentid) || $documentid < 0){
+  
+	public function getDocument($documentid) {
+		if(!is_integer($documentid) || $documentid < 0) {
 			return null;
 		}
 		$filename = $this->_getFilePathName($documentid);
-		if(!file_exists($filename)){
-			return null;
+		if (!file_exists($filename)) {
+		  return null;
 		}
 		$handle = fopen($filename, 'r');
-		$content = fread($handle, filesize($filename));
+		$contents = fread($handle, filesize($filename));
 		fclose($handle);
 		$unserialized = unserialize($contents);
-		return unserialized;
+		return $unserialized;
 	}
-
-	public function clearDocuments(){
+  
+	public function clearDocuments() {
 		$fp = opendir(DOCUMENTLOCATION);
-		while(false !== ($file = readdir($fp))){
+		while(false !== ($file = readdir($fp))) {
 			if(is_file(DOCUMENTLOCATION.$file)){
 				unlink(DOCUMENTLOCATION.$file);
 			}
 		}
 	}
-
-	public function _checkDefinitions(){
-		if(!defined('DOCUMENTLOCATION')){
-			throw new Exception('DOCUMENTLOCATION undefined');
+  
+	public function _checkDefinitions() {
+		if(!defined('DOCUMENTLOCATION')) {
+			throw new Exception('Expects DOCUMENTLOCATION to be defined!');
 		}
 	}
-
-	public function _getFilePathName($name){
+  
+	public function _getFilePathName($name) {
 		$md5 = md5($name);
 		$one = substr($md5,0,2);
-		if(!file_exists(DOCUMENTLOCATION.$one.'/')){
-			mkdir(DOCUMENTLOCATION.$one.'/');
-		}
+		mkdir(DOCUMENTLOCATION.$one.'/');
 		return DOCUMENTLOCATION.$one.'/'.$name.DOCUMENTSTORE_DOCUMENTFILEEXTENTION;
 	}
-
-	public function _getNextDocumentId(){
-		ini_set('memory_limit', '4096M'); 
+  
+	public function _getNextDocumentId() {
 		$countFile = $this->_getFilePathName('__count__');
 		$count = 0;
-		if(file_exists($countFile)){
+		if(file_exists($countFile)) {
 			$fh = fopen($countFile, 'r');
 			$count = (int)fgets($fh);
 		}
@@ -74,7 +69,5 @@ class cooldocumentstore implements idocumentstore{
 		fclose($fh);
 		return $count;
 	}
-
 }
-
 ?>

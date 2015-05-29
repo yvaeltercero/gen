@@ -1,39 +1,88 @@
 <?php
 set_time_limit(0);
+define('INDEXLOCATION',dirname(__FILE__).'/index/');
+define('DOCUMENTLOCATION',dirname(__FILE__).'/documents/');
 
-include_once './classes/coolindexer.class.php';
-include_once './classes/coolsearch.class.php';
-include_once './classes/ranker.class.php';
-include_once './classes/coolindex.class.php';
-include_once './classes/cooldocumentstore.class.php';
+include_once('./classes/coolindexer.class.php');
+include_once('./classes/dummysearch.class.php');
+include_once('./classes/coolindex.class.php');
+include_once('./classes/cooldocumentstore.class.php');
+include_once('./classes/dummyranker.class.php');
 
-define('INDEXLOCATION', dirname(__FILE__) . '/index/');
-define('DOCUMENTLOCATION', dirname(__FILE__) . '/documents/');
-
-if(!file_exists('./documents/')){
-    mkdir('./documents/');
-}
-
-if(!file_exists('./index/')){
-    mkdir('./index/');
-}
 $index = new coolindex();
 $docstore = new cooldocumentstore();
-$ranker = new ranker();
-$indexer = new coolindexer($index, $docstore, $ranker);
-$search = new coolsearch($index, $docstore, $ranker);
+$ranker = new dummyranker();
+$indexer = new coolindexer($index,$docstore,$ranker);
+$search = new dummysearch($index,$docstore,$ranker);
 
-$indexer->index(array('Setting the AuthzUserAuthoritative directive explicitly to Off allows for user authorization to be passed on to lower level modules (as defined in the modules.c files) if there is no user matching the supplied userID.'));
-$indexer->index(array('The Allow directive affects which hosts can access an area of the server. Access can be controlled by hostname, IP address, IP address range, or by other characteristics of the client request captured in environment variables.'));
-$indexer->index(array('This directive allows access to the server to be restricted based on hostname, IP address, or environment variables. The arguments for the Deny directive are identical to the arguments for the Allow directive.'));
-$indexer->index(array('The Order directive, along with the Allow and Deny directives, controls a three-pass access control system. The first pass processes either all Allow or all Deny directives, as specified by the Order directive. The second pass parses the rest of the directives (Deny or Allow). The third pass applies to all requests which do not match either of the first two.'));
-$indexer->index(array('The AuthDBDUserPWQuery specifies an SQL query to look up a password for a specified user.  The users ID will be passed as a single string parameter when the SQL query is executed.  It may be referenced within the query statement using a %s format specifier.'));
-$indexer->index(array('The AuthDBDUserRealmQuery specifies an SQL query to look up a password for a specified user and realm. The users ID and the realm, in that order, will be passed as string parameters when the SQL query is executed.  They may be referenced within the query statement using %s format specifiers.'));
+
+function html2txt($document){ 
+	$searchitem = array('@<script[^>]*?>.*?</script>@si',  // Strip out javascript 
+					'@<[\/\!]*?[^<>]*?>@si',            // Strip out HTML tags 
+					'@<style[^>]*?>.*?</style>@siU',    // Strip style tags properly 
+					'@<![\s\S]*?--[ \t\n\r]*>@',        // Strip multi-line comments including CDATA 
+					'@<style[^>]*?>.*?</style>@si',        // Strip CSS 
+					'@\W+@si',        // Strip Whitespace
+	); 
+	$text = preg_replace($searchitem, ' ', $document); 
+	return $text; 
+} 
+
 
 $toindex = array();
-for($j=0;$j<10; $j++) {
-	$toindex[] = 'If you can watch much television, then being dead will be a cinch. Actually, watching television and surfing the Internet are really excellent practice for being dead.';
+
+$count = 0;
+
+foreach(new RecursiveIteratorIterator (new RecursiveDirectoryIterator ('./documents/')) as $x) {
+	$filename = $x->getPathname();
+	echo $filename;
+	if(is_file($filename)) {
+		$handle = fopen($filename, 'r');
+		$contents = fread($handle, filesize($filename));
+		fclose($handle);
+		$unserialized = unserialize($contents);
+		
+		$url = $unserialized[0];
+		$content = $unserialized[1];
+		
+		preg_match_all('/<title.*?>.*?<\/title>/i',$content, $matches);
+		$title = trim(strip_tags($matches[0][0]));
+		
+		// Turns out PHP has a function for extracting meta tags for us, the only
+		// catch is that it works on files, so we fake a file by creating one using
+		// base64 encode and string concaternation
+		$tmp = get_meta_tags("data://$mime;base64,".base64_encode($content));
+		$desc = trim($tmp['description']);
+		
+		// This is the rest of the content. We try to clean it somewhat using
+		// the custom function html2text which works 90% of the tiem
+		$content = trim(strip_tags(html2txt($content)));
+		
+		// If values arent set lets try to set them here. Start with desc
+		// using content and then try the title using desc
+		if($desc == '' && $content != '') {
+			$desc = substr($content,0,200).'...';
+		}
+		if($title == '' && $desc != '') {
+			$title = substr($desc,0,50).'...';
+		}
+		
+		$content = '';
+		
+		// If we dont have a title, then we dont have desc or content
+		// so lets not add it to the index
+		if($title != '') {
+			$toindex[] = array($url, $title, $desc, $content);
+		}
+		
+		$count++;
+		
+		if($count == 20000)
+			break;
+		
+	}
 }
+
 $indexer->index($toindex);
 
 ?>

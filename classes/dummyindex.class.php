@@ -6,7 +6,7 @@ define('SINGLEINDEX_DOCUMENTBYTESIZE', 12);
 define('SINGLEINDEX_DOCUMENTINTEGERBYTESIZE', 4);
 define('SINGLEINDEX_DOCUMENTFILEEXTENTION', '.bin');
 
-class index implements iindex {
+class dummyindex implements iindex {
 	function __construct() {
 		$this->_checkDefinitions();
 	}
@@ -42,6 +42,7 @@ class index implements iindex {
 		}
 		$fp = fopen($this->_getFilePathName($name),'r');
 		$filesize = filesize($this->_getFilePathName($name));
+		
 		if($filesize%SINGLEINDEX_DOCUMENTBYTESIZE != 0) {
 			throw new Exception('Filesize not correct index is corrupt!');
 		}
