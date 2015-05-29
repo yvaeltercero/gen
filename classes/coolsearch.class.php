@@ -2,11 +2,11 @@
 
 include_once dirname(__FILE__).'/../interfaces/isearch.php';
 include_once dirname(__FILE__).'/../interfaces/iranker.php';
-include_once dirname(__FILE__).'/../classes/index.class.php';
+include_once dirname(__FILE__).'/../classes/coolindex.class.php';
 
 define('SEARCH_DOCUMENTRETURN', 20);
 
-class search implements isearch{
+class coolsearch implements isearch{
 
 	public $index = null;
 	public $documentstore = null;
@@ -24,7 +24,7 @@ class search implements isearch{
 		$interlists = array();
 
 		foreach($this->_cleanSearchTerms($searchterms) as $term){
-			$ind = $this->index->getDocuments($terms);
+			$ind = $this->index->getDocuments($term);
 			if($ind != null){
 				usort($ind, array($this->ranker, 'rankDocuments'));
 				$tmp = array();
@@ -66,10 +66,10 @@ class search implements isearch{
 	}
 
 	function _cleanSearchTerms($searchterms){
-		$cleansearchterms = strtolower($searchterms);
-		$cleansearchterms = preg_replace('/\W/i', ' ', $cleansearchterms);
-		$cleansearchterms = preg_replace('/\s\s+/', ' ', $cleansearchterms);
-		return explode(' ', trim($cleansearchterms));
+                $cleansearchterms = strtolower($searchterms);
+                $cleansearchterms = preg_replace('/\W/i',' ',$cleansearchterms);
+                $cleansearchterms = preg_replace('/\s\s+/', ' ', $cleansearchterms);
+                return explode(' ',trim($cleansearchterms));	
 	}
 
 }

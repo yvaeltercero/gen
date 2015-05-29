@@ -2,7 +2,7 @@
 
 include_once dirname(__FILE__) . '/../interfaces/iindexer.php';
 include_once dirname(__FILE__) . '/../interfaces/iranker.php';
-include_once dirname(__FILE__) . '/../classes/index.class.php';
+include_once dirname(__FILE__) . '/../classes/coolindex.class.php';
 
 class coolindexer implements iindexer {
 	public $index = null;

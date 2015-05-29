@@ -6,18 +6,17 @@
 define('INDEXLOCATION', dirname(__FILE__) . '/index/');
 define('DOCUMENTLOCATION', dirname(__FILE__) . '/documents/');
 
-include_once './classes/indexer.class.php';
-include_once './classes/searcher.class.php';
-// Change with coolindex and cooldocumentstore
-include_once './classes/index.class.php';
-include_once './classes/documentstore.class.php';
+include_once './classes/coolindexer.class.php';
+include_once './classes/coolsearch.class.php';
+include_once './classes/coolindex.class.php';
+include_once './classes/cooldocumentstore.class.php';
 include_once './classes/ranker.class.php';
 
-$index = new index();
-$docstore = new documentstore();
-$indexer = new indexer($index, $docstore);
+$index = new coolindex();
+$docstore = new cooldocumentstore();
 $ranker = new ranker();
-$search = new searcher($index, $docstore,$ranker);
+$indexer = new coolindexer($index, $docstore, $ranker);
+$search = new coolsearch($index, $docstore,$ranker);
 
 echo '<ul>';
 foreach ($search->dosearch($_GET['q']) as $result) {
