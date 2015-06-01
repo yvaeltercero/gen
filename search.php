@@ -28,7 +28,7 @@ include_once('./classes/coolindex.class.php');
 include_once('./classes/cooldocumentstore.class.php');
 include_once('./classes/dummyranker.class.php');
 
-$index = new coolfolderindex();
+$index = new coolindex();
 $docstore = new cooldocumentstore();
 $ranker = new dummyranker();
 $indexer = new coolindexer($index,$docstore,$ranker);

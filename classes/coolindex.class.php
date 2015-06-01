@@ -103,7 +103,9 @@ class coolindex implements iindex {
 	public function _getFilePathName($name) {
 		$md5 = md5($name);
 		$one = substr($md5,0,2);
-		mkdir(INDEXLOCATION.$one.'/');
+		if(!file_exists(INDEXLOCATION.$one.'/')){
+			mkdir(INDEXLOCATION.$one.'/');
+		}
 		return INDEXLOCATION.$one.'/'.$name.MULTIINDEX_DOCUMENTFILEEXTENTION;
 	}
   

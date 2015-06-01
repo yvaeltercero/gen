@@ -1,7 +1,7 @@
 <?php
 include_once(dirname(__FILE__).'/../interfaces/iranker.php');
 
-class coolranker implements iranker {
+class dummyranker implements iranker {
 
 	function __construct() {
 	}

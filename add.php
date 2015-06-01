@@ -1,5 +1,6 @@
 <?php
 set_time_limit(0);
+error_reporting(0);
 define('INDEXLOCATION',dirname(__FILE__).'/index/');
 define('DOCUMENTLOCATION',dirname(__FILE__).'/documents/');
 
@@ -33,9 +34,8 @@ $toindex = array();
 
 $count = 0;
 
-foreach(new RecursiveIteratorIterator (new RecursiveDirectoryIterator ('./documents/')) as $x) {
+foreach(new RecursiveIteratorIterator (new RecursiveDirectoryIterator ('./spidey/documents/')) as $x) {
 	$filename = $x->getPathname();
-	echo $filename;
 	if(is_file($filename)) {
 		$handle = fopen($filename, 'r');
 		$contents = fread($handle, filesize($filename));

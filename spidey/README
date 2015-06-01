@@ -1,0 +1,6 @@
+# Get the list of URLS
+php parse_quancast.php > small_urls.txt
+
+# Fill the index and document store
+cat small_urls.txt | xargs -L1 -P32 php crawler.php
+

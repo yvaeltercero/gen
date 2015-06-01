@@ -53,7 +53,9 @@ class cooldocumentstore implements idocumentstore {
 	public function _getFilePathName($name) {
 		$md5 = md5($name);
 		$one = substr($md5,0,2);
-		mkdir(DOCUMENTLOCATION.$one.'/');
+		if(!file_exists(DOCUMENTLOCATION.$one.'/')){
+			mkdir(DOCUMENTLOCATION.$one.'/');
+		}
 		return DOCUMENTLOCATION.$one.'/'.$name.DOCUMENTSTORE_DOCUMENTFILEEXTENTION;
 	}
   
