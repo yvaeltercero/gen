@@ -6,7 +6,7 @@
 // dependencies
 include_once(dirname(__FILE__).'/../interfaces/isearch.php');
 include_once(dirname(__FILE__).'/../interfaces/iranker.php');
-include_once(dirname(__FILE__).'/../classes/coolindex.class.php');
+include_once(dirname(__FILE__).'/../classes/dummyindex.class.php');
 
 // constants: maximum of entries returned
 define('SEARCH_DOCUMENTRETURN', 20);

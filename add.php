@@ -3,6 +3,8 @@
 set_time_limit(0);
 // <debug>
 error_reporting(0);
+// Memory limit
+ini_set('memory_limit','7G');
 // constants: PATHs to the index and doc directories
 define('INDEXLOCATION',dirname(__FILE__).'/index/');
 define('DOCUMENTLOCATION',dirname(__FILE__).'/documents/');
@@ -68,7 +70,7 @@ foreach(new RecursiveIteratorIterator (new RecursiveDirectoryIterator ('./spidey
 		$url = $unserialized[0];		// URL
 		$content = $unserialized[1];		// Content
 		// Banner for information
-                echo 'Indexing>> '.$url."\r\n";
+                echo 'Parsing>> '.$url."\r\n";
 		// General HTML parsing
 		preg_match_all('/<title.*?>.*?<\/title>/i',$content, $matches);
 		$title = trim(strip_tags($matches[0][0]));
@@ -88,6 +90,7 @@ foreach(new RecursiveIteratorIterator (new RecursiveDirectoryIterator ('./spidey
 		// Resets the content for the next iteration
 		$content = '';
 		// Add the general info to the index var
+		echo "****** $title\r\n";
 		if($title != '') {
 			$toindex[] = array($url, $title, $desc, $content);
 		}

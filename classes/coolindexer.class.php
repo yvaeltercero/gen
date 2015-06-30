@@ -6,7 +6,9 @@
 // dependencies
 include_once(dirname(__FILE__).'/../interfaces/iindexer.php');
 include_once(dirname(__FILE__).'/../interfaces/iranker.php');
-include_once(dirname(__FILE__).'/../classes/coolindex.class.php');
+include_once(dirname(__FILE__).'/../classes/dummyindex.class.php');
+
+error_reporting(00);
 
 class coolindexer implements iindexer {
 	// vars
@@ -34,7 +36,7 @@ class coolindexer implements iindexer {
 
 		// For every document in the array
 		foreach($documents as $document) {
-			
+			echo "Indexing>> $document[0]\r\n";
 			// Get the document ID
 			$id = $this->documentstore->storeDocument(array($document));
 			// Clean the document for processing
